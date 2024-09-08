@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from config.db import conn
 from models.user import users
+# from models.admin import admin
 from schemas.user import User, UserLogin #, UserOut
 from schemas.user import User, UserLogin
 from passlib.context import CryptContext
