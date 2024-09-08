@@ -1,6 +1,6 @@
 from sqlalchemy import Table,Column
 from sqlalchemy.sql.sqltypes import Integer,String
-from config.db import meta
+from config.db import meta,conn
 
 users = Table(
         'users',meta,
@@ -9,3 +9,5 @@ users = Table(
         Column("email",String(255)),
         Column("password",String(255)),
 )
+
+#meta.create_all(conn)
