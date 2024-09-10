@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends,Request,status
+from fastapi.responses import JSONResponse
 from config.db import conn
 from models.user import users
 # from models.admin import admin
@@ -8,7 +9,8 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta
 import jwt
 import logging
-from sqlalchemy import insert
+from sqlalchemy import insert, select,  and_
+
 
 
 user = APIRouter()
@@ -78,10 +80,37 @@ async def read_data(id: int):
 @user.post("/register")
 async def register_user(user: User):
     try:
+
+          # Validate the fields required
+          
+        user_name = user.name
+        user_email = user.email
+        user_password = user.password
+        
+
+        if not user_name.strip() or not user_email.strip() or not user_password:
+            missing_fields = []
+            if not user_name.strip():
+                missing_fields.append("name")
+            if not user_email.strip():
+                missing_fields.append("email")
+            if not user_password:
+                missing_fields.append("password")
+            return JSONResponse(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                content={"success": 0, "msg": f"Missing fields: {', '.join(missing_fields)}"}
+            )
+
+
         # Check if user already exists
         existing_user = conn.execute(users.select().where(users.c.email == user.email)).fetchone()
         if existing_user:
-            raise HTTPException(status_code=400, detail="Email already registered")
+            # raise HTTPException(status_code=400, detail="Email already registered")
+             return JSONResponse(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                content={"success": 0, "msg": f"Missing fields: {', '.join(missing_fields)}"}
+            )
+
 
         # Hash the user's password and insert the new user
         hashed_password = get_password_hash(user.password)
@@ -117,11 +146,35 @@ async def register_user(user: User):
 
 async def login_user(user: UserLogin):
     try:
+
+          # Validate the fields required
+
+        user_email = user.email
+        user_password = user.password
+        
+
+        if not user_email.strip() or not user_password:
+            missing_fields = []
+            if not user_email.strip():
+                missing_fields.append("email")
+            if not user_password:
+                missing_fields.append("password")
+            return JSONResponse(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                content={"success": 0, "msg": f"Missing fields: {', '.join(missing_fields)}"}
+            )
+
+
+
         # Fetch user by email
         db_user = conn.execute(users.select().where(users.c.email == user.email)).fetchone()
         #print(db_user.id)
         if db_user is None:
-            raise HTTPException(status_code=400, detail="Invalid credentials")
+            #raise HTTPException(status_code=400, detail="Invalid credentials")
+            return JSONResponse(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    content={"success": 0, "msg": "Invalid Credentials"}
+                )
         
         # Get hashed password from the database
         stored_hashed_password = db_user.password
@@ -141,12 +194,38 @@ async def login_user(user: UserLogin):
 @user.put("/{id}")
 async def update_data(id: int, user: User):
     try:
+
+
+        # Validate the fields required
+        user_name = user.name
+        user_email = user.email
+        user_password = user.password
+        
+
+        if not user_name.strip() or not user_email.strip() or not user_password:
+            missing_fields = []
+            if not user_name.strip():
+                missing_fields.append("name")
+            if not user_email.strip():
+                missing_fields.append("email")
+            if not user_password:
+                missing_fields.append("password")
+            return JSONResponse(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                content={"success": 0, "msg": f"Missing fields: {', '.join(missing_fields)}"}
+            )
+
+
+
+        
         result = conn.execute(users.update().where(users.c.id == id).values(
             name=user.name,
             email=user.email,
             password=get_password_hash(user.password)  # Hash the password before updating
         ))
+       
         if result.rowcount:
+            conn.commit() 
             return get_all_users()  # Return all data after update
         else:
             raise HTTPException(status_code=404, detail="User not found")

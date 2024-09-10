@@ -10,3 +10,4 @@ class Task(BaseModel):
 
 class TaskUpdate(BaseModel):
     status: Optional[str] = None
+    assigned_to: int

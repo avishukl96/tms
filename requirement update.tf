@@ -1,4 +1,4 @@
-requirement - 1
+Sprint - 1
 
 user login (Jwt), register
 
@@ -19,7 +19,7 @@ TMS - Project
 
         
 
-requirement - 2
+Sprint - 2 Task Module Added
 
 TMS - Project
     > __pychache__
@@ -42,7 +42,7 @@ TMS - Project
 
   
 
-requirement - 3
+Sprint - 3
 
 TMS - Project
     > __pychache__
@@ -69,7 +69,7 @@ TMS - Project
   
 
 
-
+For My Info 
 
 
 Environment Setup
@@ -100,7 +100,10 @@ pip install -r requirements.txt
 
 
 
-
+for Adding a New Feature, these below files needs to be Added
+    Routing
+    models
+    Schemas
 
 
 

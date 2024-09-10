@@ -12,4 +12,17 @@ admin = Table(
 )
 
 meta.create_all(engine)
-      
+
+
+from sqlalchemy import Table, Column, Integer, String, MetaData
+
+metadata = MetaData()
+
+administrator = Table(
+    'administrator', metadata,
+    Column('admin_id', Integer, primary_key=True),
+    Column('admin_name', String),
+    Column('admin_email', String),
+    Column("created_at", DateTime, default=datetime.utcnow),
+    Column("updated_at", DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+)
